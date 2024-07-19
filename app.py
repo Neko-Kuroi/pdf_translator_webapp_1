@@ -5,7 +5,7 @@ import hashlib
 #from streamlit_pdf_viewer import pdf_viewer
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
-from streamlit_js_eval import streamlit_js_eval
+#from streamlit_js_eval import streamlit_js_eval
 import secrets
 
 from pypdf import PdfReader
@@ -125,7 +125,7 @@ def main():
                     del st.session_state[key]
             shutil.rmtree(f"removefolder/{temp_dir}")
             # page reload
-            streamlit_js_eval(js_expressions="parent.window.location.reload()")
+#            streamlit_js_eval(js_expressions="parent.window.location.reload()")
         st.markdown("----")
 
         plain_text1 = " 𓃠 select target language 𓃠 "
