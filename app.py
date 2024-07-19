@@ -7,10 +7,8 @@ from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 #from streamlit_js_eval import streamlit_js_eval
 import secrets
-
 from pypdf import PdfReader
 import glob
-
 
 def get_remote_ip() -> str:
     """Get remote ip."""
