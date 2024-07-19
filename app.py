@@ -2,7 +2,7 @@ import streamlit as st
 import zipfile, shutil, time
 import os
 import hashlib
-#from streamlit_pdf_viewer import pdf_viewer
+from streamlit_pdf_viewer import pdf_viewer
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 #from streamlit_js_eval import streamlit_js_eval
