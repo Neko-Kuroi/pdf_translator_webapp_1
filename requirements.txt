@@ -20,7 +20,6 @@ mdurl==0.1.2
 packaging==23.2
 Pillow==10.0.1
 protobuf==4.24.4
-pyarrow==10.0.1
 pydeck==0.8.0
 Pygments==2.16.1
 pypdf==4.3.0
