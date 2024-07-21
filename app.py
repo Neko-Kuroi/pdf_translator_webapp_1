@@ -2,14 +2,21 @@ import streamlit as st
 import zipfile, shutil, time
 import os
 import hashlib
-from streamlit_pdf_viewer import pdf_viewer
+#from streamlit_pdf_viewer import pdf_viewer
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from streamlit_js_eval import streamlit_js_eval
 import secrets
 
+import threading
+from streamlit.runtime.scriptrunner import add_script_run_ctx
+#import streamlit.components.v1 as components
+from streamlit.runtime import get_instance
+
 from pypdf import PdfReader
 import glob
+import logging
+
 
 def get_remote_ip() -> str:
     """Get remote ip."""
@@ -33,6 +40,49 @@ def my_makedirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
+def heart_beat():
+    """
+    Heartbeat function to track whether the session is alive
+    """
+    thread = threading.Timer(interval=2, function=heart_beat)
+
+    # insert context to the current thread, needed for
+    # getting session specific attributes like st.session_state
+
+    add_script_run_ctx(thread)
+
+    # context is required to get session_id of the calling
+    # thread (which would be the script thread)
+    ctx = get_script_run_ctx()
+
+    # this is the main runtime, contains all the sessions
+    runtime = get_instance()
+
+    if runtime.is_active_session(session_id=ctx.session_id):
+        logging.info(f"{ctx.session_id} is alive.")
+        thread.start()
+    else:
+        if os.path.isdir(f"removefolder/{st.session_state.uniq}"):
+            shutil.rmtree(f"removefolder/{st.session_state.uniq}")
+            logging.info(f"{ctx.session_id} is gone.")
+        return
+
+# JavaScript to detect browser exit
+EXIT_JS = """
+<script>
+    window.addEventListener('beforeunload', function (event) {
+        fetch('/close_session', {method: 'POST'}).then(response => {
+            return response.text();
+        }).then(data => {
+            console.log(data);
+        });
+    });
+</script>
+"""
+
+# Embed the JavaScript in the Streamlit app
+#components.html(EXIT_JS)
+streamlit_js_eval(js_expressions = EXIT_JS)
 
 def main():
 
@@ -54,10 +104,33 @@ def main():
     if 'result' not in st.session_state:
         st.session_state.result = ""
 
+    apptitle = st.empty()
+    description = st.empty()
     obj_0 = st.empty()
     obj_1 = st.empty()
+    
+    apptitle.header("PDF file Translator 𓁨", divider='gray')
+    description.markdown("""
+It's easy to use. Just upload:outbox_tray:, select the language, and download the resulting .zip file.:package:
 
-    obj_0.header("`PDF file uploader`")
+After uploading a PDF file and selecting the translation language, you can wait a while.
+
+The original text, the original text and translation (a few lines of the original text followed by the translation) and the translation text will be compressed into a zip file and available for download.
+
+When you press the download button, the compressed file will be downloaded, and if you select another translation language, the process will be repeated.:leftwards_arrow_with_hook:
+
+The uploaded PDF file data will disappear <u>when you close the browser tab.</u> :thought_balloon: :eyes:
+
+**Only PDF files can be uploaded.**
+
+This translation app is useful for people who want to translate something or want to read something but cannot read it unless it is translated, and who want to quickly check the original text and the translation by comparing them in pairs. :yin_yang:
+
+**Even if the PDF file has many pages, there is no limit to the number of pages or characters.**
+
+<u>The untranslated data will be retained until the browser is closed, but once the app page is closed, the connection will be cut off and the data will be deleted.</u>:broken_heart:
+""", unsafe_allow_html=True)
+    
+    obj_0.header("`PDF file uploader` (1st step)")
     st.markdown(f"The remote ip is `{get_remote_ip()}`")
 
     uploaded_file = obj_1.file_uploader("UPLOAD your .pdf file", type="pdf")
@@ -117,14 +190,14 @@ def main():
         ########
         reload_bt = st.empty()
         if reload_bt.button("Upload another PDF file"):
-            for key in st.session_state.keys():
-                if key == "count" or key == "temp" or key == "lang":
-                    continue
-                else:
-                    del st.session_state[key]
+            #for key in st.session_state.keys():
+            #    if key == "count" or key == "temp" or key == "lang":
+            #        continue
+            #    else:
+            #        del st.session_state[key]
             shutil.rmtree(f"removefolder/{temp_dir}")
             # page reload
-#            streamlit_js_eval(js_expressions="parent.window.location.reload()")
+            streamlit_js_eval(js_expressions="parent.window.location.reload()")
         st.markdown("----")
 
         plain_text1 = " 𓃠 select target language 𓃠 "
@@ -144,7 +217,6 @@ def main():
         `ko`: **Korean**,
         `vi`: **Vietnamese**,
         `th`: **Thai**,
-        `tl`: **Tagalog**,
         `ca`: **Catalan**,
         `si`: **Sinhalese**
         """)
@@ -159,22 +231,22 @@ def main():
             "Korean",
             "Vietnamese",
             "Thai",
-            "Tagalog",
             "Catalan",
             "Sinhalese",
         ]
         sel = st.empty()
-        #language = sel.radio(
-        #            label='translate to',
-        #            options=lang_code,
-        #            index=0,
-        #            key = f"select_lang{st.session_state.count}")
-        language = sel.selectbox(
-            'translate to',
-            lang_code,
-            index=0,
+        language = sel.radio(
+                    label='translate to',
+                    options=lang_code,
+                    index=0,
+                    key = f"select_lang{st.session_state.count}",
+                    horizontal=True)
+        #language = sel.selectbox(
+        #    'translate to',
+        #    lang_code,
+        #    index=0,
             #placeholder = "select language",
-            key=f"select_lang{st.session_state.count}")
+        #    key=f"select_lang{st.session_state.count}")
 
         statename = f"select_lang{st.session_state.count}"
         if "target_lang" not in st.session_state:
@@ -274,8 +346,6 @@ def main():
                     to = "vi"
                 case "Thai":
                     to = "th"
-                case "Tagalog":
-                    to = "tl"
                 case "Catalan":
                     to = "ca"
                 case "Sinhalese":
@@ -367,7 +437,6 @@ def main():
 
                                     #                                    intext_1 = f'<span style="color:DimGray;background:GhostWhite">{all_text_orig}</span>'
                                     #                                    work_area1.markdown(intext_1, unsafe_allow_html=True)
-                                    work_area1.write(f"{all_text_orig}")
                                     # intext_2 = f'<span style="color:LavenderBlush;background:LightGray">{all_text_done}</span>'
                                     work_area2.write(f"{all_text_done}")
                                     # work_area2.markdown(intext_2, unsafe_allow_html=True)
@@ -404,7 +473,8 @@ def main():
                                 "a") as f:
                             f.write(all_text_orig + "\n")
 
-            
+            st.balloons()
+            work_area2.write("completed.𓁙")
             st.markdown("----")
 
             my_makedirs(f"removefolder/{temp_dir}/download_section")
@@ -421,10 +491,6 @@ def main():
             shutil.rmtree(
                 f"removefolder/{temp_dir}/work_{st.session_state.count}")
 
-            st.balloons()
-            work_area1.empty()
-            work_area2.empty()
-            
             #--------------------------------------
 
             st.success("Download translated text files")
@@ -469,4 +535,6 @@ def main():
             # st.write(st.session_state.result, unsafe_allow_html=True)
 
 if __name__ == "__main__":
+    heart_beat()
+    
     main()
