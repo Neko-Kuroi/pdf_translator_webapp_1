@@ -62,9 +62,10 @@ def heart_beat():
         logging.info(f"{ctx.session_id} is alive.")
         thread.start()
     else:
-        if os.path.isdir(f"removefolder/{st.session_state.uniq}"):
-            shutil.rmtree(f"removefolder/{st.session_state.uniq}")
-            logging.info(f"{ctx.session_id} is gone.")
+        if 'uniq' in st.session_state:
+            if os.path.isdir(f"removefolder/{st.session_state.uniq}"):
+                shutil.rmtree(f"removefolder/{st.session_state.uniq}")
+                logging.info(f"{ctx.session_id} is gone.")
         return
 
 # JavaScript to detect browser exit
