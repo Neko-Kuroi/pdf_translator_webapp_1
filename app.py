@@ -2,7 +2,7 @@ import streamlit as st
 import zipfile, shutil, time
 import os
 import hashlib
-#from streamlit_pdf_viewer import pdf_viewer
+from streamlit_pdf_viewer import pdf_viewer
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from streamlit_js_eval import streamlit_js_eval
@@ -149,7 +149,7 @@ This translation app is useful for people who want to translate something or wan
             st.session_state.uploadedfilename = uploadedfilename
 
         if "book" not in st.session_state:
-            #            pdf_viewer(input=uploaded_file.getvalue(), width=700, height=500)
+            pdf_viewer(input=uploaded_file.getvalue(), width=700, height=500)
 
             my_makedirs(
                 f"removefolder/{temp_dir}/upload_folder_{st.session_state.count}"
