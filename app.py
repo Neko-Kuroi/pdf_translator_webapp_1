@@ -219,7 +219,8 @@ This translation app is useful for people who want to translate something or wan
         `vi`: **Vietnamese**,
         `th`: **Thai**,
         `ca`: **Catalan**,
-        `si`: **Sinhalese**
+        `si`: **Sinhalese**,
+        `ne`: **Nepall**
         """)
         lang_code = [
             "select language",
@@ -234,6 +235,7 @@ This translation app is useful for people who want to translate something or wan
             "Thai",
             "Catalan",
             "Sinhalese",
+            "Nepall",
         ]
         sel = st.empty()
         language = sel.radio(
@@ -351,6 +353,8 @@ This translation app is useful for people who want to translate something or wan
                     to = "ca"
                 case "Sinhalese":
                     to = "si"
+                case "Nepall":
+                    to = "ne"
                 case _:
                     to = "unknown"
 
