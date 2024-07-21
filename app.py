@@ -149,7 +149,7 @@ This translation app is useful for people who want to translate something or wan
             st.session_state.uploadedfilename = uploadedfilename
 
         if "book" not in st.session_state:
-            pdf_viewer(input=uploaded_file.getvalue(), width=700, height=500)
+            #pdf_viewer(input=uploaded_file.getvalue(), width=700, height=500)
 
             my_makedirs(
                 f"removefolder/{temp_dir}/upload_folder_{st.session_state.count}"
