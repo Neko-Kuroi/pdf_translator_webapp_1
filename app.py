@@ -112,7 +112,7 @@ def main():
     obj_1 = st.empty()
     
     apptitle.header("PDF file Translator 𓁨", divider='gray')
-    langs.write('`Japanese`, `English`, `French`, `Chinese (traditional)`, `Chinese (simplified)`, `Russian`, `Korean`, `Vietnamese`, `Thai`, `Catalan`, `Sinhalese`, `Nepall`')
+    langs.write('This App can translate to `Japanese`, `English`, `French`, `Chinese (traditional)`, `Chinese (simplified)`, `Russian`, `Korean`, `Vietnamese`, `Thai`, `Catalan`, `Sinhalese`, `Nepall`')
     description.markdown("""
 It's easy to use. Just upload:outbox_tray:, select the language, and download the resulting .zip file.:package:
 
